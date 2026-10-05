@@ -1,7 +1,15 @@
 name: Jalankan Bot Lamaran Otomatis
 
 on:
-  # Memungkinkan Anda menjalankan bot secara manual dengan menekan tombol
+  schedule:
+    # Eksekusi jam 08.40 WIB (01.40 UTC) setiap hari
+    - cron: '40 1 * * *'
+    # Eksekusi jam 11.00 WIB (04.00 UTC) setiap hari
+    - cron: '0 4 * * *'
+    # Eksekusi jam 14.00 WIB (07.00 UTC) setiap hari
+    - cron: '0 7 * * *'
+
+  # Tombol manual tetap ada jika Anda ingin tes sewaktu-waktu
   workflow_dispatch:
 
 jobs:
@@ -17,13 +25,12 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Menginstal modul pendukung jika ada
+    - name: Memasang modul pendukung jika ada
       run: |
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
     - name: Eksekusi Kirim Email Lamaran
       env:
-        # Menghubungkan variabel sistem ke GitHub Secrets yang sudah dibuat
         EMAIL_PENGIRIM: ${{ secrets.EMAIL_PENGIRIM }}
         PASSWORD_APLIKASI: ${{ secrets.PASSWORD_APLIKASI }}
       run: python email_sender.py
