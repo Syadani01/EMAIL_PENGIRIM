@@ -6,39 +6,41 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 
-# Mengambil data rahasia secara aman dari GitHub Secrets
+# Mengambil data rahasia secara aman dari GitHub Secrets atau Environment Variables
 EMAIL_PENGIRIM = os.environ.get("EMAIL_PENGIRIM")
 PASSWORD_APLIKASI = os.environ.get("PASSWORD_APLIKASI")
 
 # --- LENGKAPI IDENTITAS ANDA DI SINI ---
 NAMA_PENGIRIM = "Abdul Mughni Sukma Sadani"
 POSISI_YANG_DILAMAR = "Operator Produksi"
-FILE_CV = "CV_Anda.pdf"
+FILE_CV = "CV_Anda.pdf"  # Pastikan nama file CV Anda di folder sama dengan nama ini
 
-SUBJEK_EMAIL = f"Operator produksi_Abdul Mughni Sukma Sadani"
+SUBJEK_EMAIL = f"{POSISI_YANG_DILAMAR} - {NAMA_PENGIRIM}"
 
 BODY_EMAIL = f"""Dengan hormat,
-Bapak/Ibu Pimpinan HRD 
-Di 
-PT Armada Footwear Indonesia 
 
- Sesuai dengan informasi yang saya terima, bahwa PT Armada Footwer Indonesia. sedang membutuhkan beberapa lowongan Pekerjaan Operator Produksi, Maka saya yang bertanda tangan dibawah ini.
+Bapak/Ibu Pimpinan HRD
+PT Armada Footwear Indonesia
+Di Tempat
 
-Nama : Abdul Mughni Sukma Sadani
-Tempat, tanggal lahir : Tegal, 11 Oktober 2001
-Jenis kelamin : Laki-laki
-Pendidikan terakhir : SMK
-Alamat : Jln. Jaya Sumita, RT 07 RW 02, Desa Lebeteng, Kecamatan Tarub, Kabupaten Tegal
-No Hp/Wa : 0895383240554
+Sesuai dengan informasi lowongan kerja yang saya terima bahwa PT Armada Footwear Indonesia sedang membutuhkan karyawan untuk posisi {POSISI_YANG_DILAMAR}, maka dengan ini saya bermaksud mengajukan diri untuk mengisi posisi tersebut.
 
-Bermaksud untuk mengisi lowongan pekerjaan tersebut. Bersama ini saya lampirkan satu lembar daftar riwayat hidup dan data pendukung lainnya sebagai bahan pertimbangan dalam bentuk attachment.
+Berikut adalah data singkat mengenai diri saya:
 
-Bila dikehendaki, saya bersedia memenuhi panggilan untuk dites dan diwawancarai. Atas perhatian Bapak/Ibu saya mengucapkan terima kasih.
+Nama: {NAMA_PENGIRIM}
+Tempat, tanggal lahir: Tegal, 11 Oktober 2001
+Jenis kelamin: Laki-laki
+Pendidikan terakhir: SMK
+Alamat: Jln. Jaya Sumita, RT 07 RW 02, Desa Lebeteng, Kecamatan Tarub, Kabupaten Tegal
+No. HP/WhatsApp: 0895383240554
+
+Sebagai bahan pertimbangan Bapak/Ibu, saya lampirkan daftar riwayat hidup (CV) beserta dokumen pendukung lainnya dalam bentuk attachment pada email ini.
+
+Besar harapan saya untuk diberikan kesempatan menghadiri sesi tes dan wawancara agar dapat menjelaskan potensi diri saya secara lebih mendalam. Atas perhatian Bapak/Ibu, saya mengucapkan terima kasih.
 
 Hormat saya,
 
-(Abdul Mughni Sukma Sadani)
-
+{NAMA_PENGIRIM}
 """
 
 def kirim_email():
@@ -53,6 +55,7 @@ def kirim_email():
         print("Daftar email HRD kosong.")
         return
 
+    # PERBAIKAN: Menggunakan host SMTP Gmail yang benar
     print("Menghubungkan ke server SMTP Gmail...")
     try:
         server = smtplib.SMTP("://gmail.com", 587)
@@ -76,11 +79,12 @@ def kirim_email():
                 part = MIMEBase("application", "octet-stream")
                 part.set_payload(attachment.read())
                 encoders.encode_base64(part)
-                part.add_header("Content-Disposition", f"attachment; filename= {os.path.basename(FILE_CV)}")
+                part.add_header("Content-Disposition", f"attachment; filename={os.path.basename(FILE_CV)}")
                 msg.attach(part)
         except Exception as e:
             print(f"Gagal melampirkan file CV: {e}")
-            break
+            # Menggunakan continue agar jika 1 file gagal, pengiriman ke email berikutnya tetap berjalan
+            continue
 
         try:
             server.sendmail(EMAIL_PENGIRIM, email_tujuan, msg.as_string())
