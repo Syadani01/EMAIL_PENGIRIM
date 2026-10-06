@@ -61,10 +61,10 @@ def kirim_email():
         print("Daftar email HRD di file 'daftar_email.txt' masih kosong.")
         return
 
-    # Menghubungkan ke Server SMTP Gmail resmi
+    # PERBAIKAN UTAMA: Mengubah "://gmail.com" menjadi server SMTP resmi Gmail yang valid
     print("Menghubungkan ke server SMTP Gmail...")
     try:
-        server = smtplib.SMTP("://gmail.com", 587)
+        server = smtplib.SMTP("smtp.gmail.com", 587)
         server.starttls()
         server.login(EMAIL_PENGIRIM, PASSWORD_APLIKASI)
         print("Login berhasil! Memulai proses pengiriman...\n")
